@@ -24,7 +24,7 @@ int main()
          << endl;
     cout << Z << " powerset "
          << ":" << endl;
-    cout << Z.powerSet() << "\n"
+    cout << Z.power_set() << "\n"
          << endl;
     cout << Y << " * " << Z << ":" << endl;
     cout << M << endl;
@@ -43,11 +43,11 @@ int main()
             "(x,y)=x\n(x,y)=x+y\n\nIdentity element of set "
          << X
          << endl;
-    cout << *op.Identityelement(X) << endl;
+    cout << *op.identity_element(X) << endl;
     cout << "Left Inverse in set" << X << " element 1 " << endl;
-    cout << *op.LeftInverseElement(X, 1) << endl;
+    cout << *op.left_inverse_element(X, 1) << endl;
     cout << "Calculation of all elemeents of set " << M << endl;
-    cout << op.CalcSet(M) << endl;
+    cout << op.calc_set(M) << endl;
 
     cout << "\nFunctions\n"
          << endl;
@@ -66,12 +66,12 @@ int main()
     InfiniteSet<int> N([](int x) { return !(x % 1) && x > -1; }, 100, 0);
     InfiniteSet<int> N_zero([](int x) { return !(x % 1) && x > 0; }, 67, 0);
     InfiniteSet<int> EN([](int x) { return x > 89; }, 21, 0, false, true);
-    InfiniteSet<InfiniteSet<int>> PN = N.powerSet();
+    InfiniteSet<InfiniteSet<int>> PN = N.power_set();
     PN.remove(N_zero);
     cout << "Is infinite group of numbers greater than 89 an element of P(N)-(N-{0}):" << endl;
-    cout << PN.iselement(EN) << endl;
+    cout << PN.is_element(EN) << endl;
      cout << "Is N-{0} an element of P(N)-(N-{0}):" << endl;
-    cout << PN.iselement(N_zero) << endl;
+    cout << PN.is_element(N_zero) << endl;
     EN.add(9);
     cout << "N:" << endl;
     cout << N << endl;

@@ -21,47 +21,70 @@ class BinaryOperation
   public:
     BinaryOperation(function<T(T, T)> func) : op(func) {}
     ~BinaryOperation() {}
+    /* Returns the result of the operation */
     T operation(T &x, T &y);
-    bool Closure(Set<T> &set);
-    bool Associative(Set<T> &set);
-    bool Commutative(Set<T> &set);
-    typename Set<T>::iterator Identityelement(Set<T> &set);
-    typename Set<T>::iterator LeftInverseElement(Set<T> &set, T x);
-    typename Set<T>::iterator RightInverseElement(Set<T> &set, T x);
-    bool RightDistributive(Set<T> &set, BinaryOperation<T> &bin);
-    bool LeftDistributive(Set<T> &set, BinaryOperation<T> &bin);
-    Set<T> CalcSet(Set<pair<T, T>> &set);
+    /* If the operation is closed on set */
+    bool closure(Set<T> &set);
+
+    /* If the operation is associative on set */
+    bool associative(Set<T> &set);
+
+    /* If the operation is commtative on set */
+    bool commutative(Set<T> &set);
+    /* Returns identity element of the operation in set */
+    typename Set<T>::iterator identity_element(Set<T> &set);
+
+    /* Returns right or left inverse element of the operation in set for a given element */
+    typename Set<T>::iterator left_inverse_element(Set<T> &set, T x);
+    typename Set<T>::iterator right_inverse_element(Set<T> &set, T x);
+
+    /* If the operation is right or left distributive on set */
+    bool right_distributive(Set<T> &set, BinaryOperation<T> &bin);
+    bool left_distributive(Set<T> &set, BinaryOperation<T> &bin);
+
+    /* Calculactes a set of ordered pairs */
+    Set<T> calc_set(Set<pair<T, T>> &set);
 };
 
+/* Returns the result of the operation */
 template <class T>
 T BinaryOperation<T>::operation(T &x, T &y)
 {
     return this->op(x, y);
 }
 
+/* 
+*  If the operation is closed on set 
+*  ∀x,y ∈ set ((x * y) ∈ set ) 
+*/
 template <class T>
-bool BinaryOperation<T>::Closure(Set<T> &set)
+bool BinaryOperation<T>::closure(Set<T> &set)
 {
-    for (int i = 0; i < set.Getcardinality(); i++)
+    for (int i = 0; i < set.get_cardinality(); i++)
     {
-        for (int j = 0; j < set.Getcardinality(); j++)
+        for (int j = 0; j < set.get_cardinality(); j++)
         {
-            if (!set.iselement(this->operation(set[i], set[j])))
+            if (!set.is_element(this->operation(set[i], set[j])))
                 return false;
         }
     }
     return true;
 }
+
+/*
+*  If the operation is associative on set 
+*  operation is closed ⋀ ∀x,y,z ∈ set ( (x * (y * z)) = ((x * y) * z) )
+*/
 template <class T>
-bool BinaryOperation<T>::Associative(Set<T> &set)
+bool BinaryOperation<T>::associative(Set<T> &set)
 {
-    if (!this->Closure(set))
+    if (!this->closure(set))
         return false;
-    for (int i = 0; i < set.Getcardinality(); i++)
+    for (int i = 0; i < set.get_cardinality(); i++)
     {
-        for (int j = 0; j < set.Getcardinality(); j++)
+        for (int j = 0; j < set.get_cardinality(); j++)
         {
-            for (int n = 0; n < set.Getcardinality(); n++)
+            for (int n = 0; n < set.get_cardinality(); n++)
             {
                 if (this->operation(this->operation(set[i], set[j]), set[n]) !=
                     this->operation(set[i], this->operation(set[j], set[n])))
@@ -72,12 +95,16 @@ bool BinaryOperation<T>::Associative(Set<T> &set)
     return true;
 }
 
+/*
+*  If the operation is commtative on set 
+*  ∀x,y ∈ set ((x * y) = (y * x))
+*/
 template <class T>
-bool BinaryOperation<T>::Commutative(Set<T> &set)
+bool BinaryOperation<T>::commutative(Set<T> &set)
 {
-    for (int i = 0; i < set.Getcardinality(); i++)
+    for (int i = 0; i < set.get_cardinality(); i++)
     {
-        for (int j = 0; j < set.Getcardinality(); j++)
+        for (int j = 0; j < set.get_cardinality(); j++)
         {
             if (this->operation(set[i], set[j]) != this->operation(set[j], set[i]))
                 return false;
@@ -86,8 +113,12 @@ bool BinaryOperation<T>::Commutative(Set<T> &set)
     return true;
 }
 
+/* 
+*  Returns identity element of the operation in set (element e)
+*  ∃e ∈ set (∀x ∈ set  (e * x) = x ⋀ (x * e) = x)
+*/
 template <class T>
-typename Set<T>::iterator BinaryOperation<T>::Identityelement(Set<T> &set)
+typename Set<T>::iterator BinaryOperation<T>::identity_element(Set<T> &set)
 {
 
     for (typename Set<T>::iterator i = set.begin(); i != set.end(); i++)
@@ -109,13 +140,18 @@ typename Set<T>::iterator BinaryOperation<T>::Identityelement(Set<T> &set)
     return set.end();
 }
 
+/* 
+*  Returns right or left inverse element of the operation in set for a given element (element i)
+*  Right : ∃i ∈ set ((i * x) = e)
+*  Left : ∃i ∈ set ((x * i) = e)
+*/
 template <class T>
-typename Set<T>::iterator BinaryOperation<T>::LeftInverseElement(Set<T> &set,
+typename Set<T>::iterator BinaryOperation<T>::left_inverse_element(Set<T> &set,
                                                                  T x)
 {
-    if (this->Identityelement(set) == set.end())
+    if (this->identity_element(set) == set.end())
         return set.end();
-    T identity=*this->Identityelement(set);
+    T identity=*this->identity_element(set);
     for (typename Set<T>::iterator i = set.begin(); i != set.end(); i++)
     {
         if (this->operation(*i, x) == identity)
@@ -125,13 +161,13 @@ typename Set<T>::iterator BinaryOperation<T>::LeftInverseElement(Set<T> &set,
 }
 
 template <class T>
-typename Set<T>::iterator BinaryOperation<T>::RightInverseElement(Set<T> &set,
+typename Set<T>::iterator BinaryOperation<T>::right_inverse_element(Set<T> &set,
                                                                   T x)
 {
     
-    if (this->Identityelement(set) == set.end())
+    if (this->identity_element(set) == set.end())
         return set.end();
-    T identity=*this->Identityelement(set);
+    T identity=*this->identity_element(set);
     for (typename Set<T>::iterator i = set.begin();
          i != set.end(); i++)
     {
@@ -141,15 +177,20 @@ typename Set<T>::iterator BinaryOperation<T>::RightInverseElement(Set<T> &set,
     return set.end();
 }
 
+/* 
+*  If the operation is right or left distributive on set with given operation(∆)
+*  Left : ∀x,y,z ∈ set (x * (y ∆ z) = (x * y) ∆ (x * z))
+*  Right : ∀x,y,z ∈ set ((y ∆ z) * x = (y * x) ∆ (z * x))
+*/
 template <class T>
-bool BinaryOperation<T>::RightDistributive(Set<T> &set,
+bool BinaryOperation<T>::left_distributive(Set<T> &set,
                                            BinaryOperation<T> &bin)
 {
-    for (int i = 0; i < set.Getcardinality(); i++)
+    for (int i = 0; i < set.get_cardinality(); i++)
     {
-        for (int j = 0; j < set.Getcardinality(); j++)
+        for (int j = 0; j < set.get_cardinality(); j++)
         {
-            for (int n = 0; n < set.Getcardinality(); n++)
+            for (int n = 0; n < set.get_cardinality(); n++)
             {
                 if (this->operation(set[i], bin.operation(set[j], set[n])) !=
                     bin.operation(this->operation(set[i], set[j]),
@@ -162,14 +203,14 @@ bool BinaryOperation<T>::RightDistributive(Set<T> &set,
 }
 
 template <class T>
-bool BinaryOperation<T>::LeftDistributive(Set<T> &set,
+bool BinaryOperation<T>::right_distributive(Set<T> &set,
                                           BinaryOperation<T> &bin)
 {
-    for (int i = 0; i < set.Getcardinality(); i++)
+    for (int i = 0; i < set.get_cardinality(); i++)
     {
-        for (int j = 0; j < set.Getcardinality(); j++)
+        for (int j = 0; j < set.get_cardinality(); j++)
         {
-            for (int n = 0; n < set.Getcardinality(); n++)
+            for (int n = 0; n < set.get_cardinality(); n++)
             {
                 if (this->operation(bin.operation(set[j], set[n]), set[i]) !=
                     bin.operation(this->operation(set[j], set[i]),
@@ -181,11 +222,12 @@ bool BinaryOperation<T>::LeftDistributive(Set<T> &set,
     return true;
 }
 
+/* Returns a set with calculated values of each ordered pairs in set */
 template <class T>
-Set<T> BinaryOperation<T>::CalcSet(Set<pair<T, T>> &set)
+Set<T> BinaryOperation<T>::calc_set(Set<pair<T, T>> &set)
 {
     Set<T> temp;
-    for (int i = 0; i < set.Getcardinality(); i++)
+    for (int i = 0; i < set.get_cardinality(); i++)
     {
         temp.add(this->operation(set[i].first, set[i].second));
     }

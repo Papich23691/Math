@@ -18,6 +18,7 @@ public:
   Set() {}
   Set(list<T> list) : elements(list) { elements.sort(); }
   ~Set() {}
+  /* Set iterator */
   class iterator
   {
   public:
@@ -28,17 +29,20 @@ public:
     typedef std::forward_iterator_tag iterator_category;
     typedef int difference_type;
     iterator(pointer ptr) : ptr_(ptr) {}
+    
     self_type operator++()
     {
       self_type i = *this;
       ptr_++;
       return i;
     }
+
     self_type operator++(int junk)
     {
       ptr_++;
       return *this;
     }
+
     reference operator*() { return *ptr_; }
     pointer operator->() { return ptr_; }
     bool operator==(const self_type &rhs) { return ptr_ == rhs.ptr_; }
@@ -48,28 +52,54 @@ public:
     typename list<T>::iterator ptr_;
   };
 
+  /* Begin and end of set */
   iterator begin() { return iterator(this->elements.begin()); }
   iterator end() { return iterator(this->elements.end()); }
+  
   void remove(T element);
   void add(T element);
-  bool subsetOf(Set<T> &s);
-  bool iselement(T element);
+  
+  /* If this ⊆ s*/
+  bool sub_set_of(Set<T> &s);
+
+  /* If element ∈ this */
+  bool is_element(T element);
+
+  /* If this = other */
   bool operator==(Set<T> &other);
   bool operator!=(Set<T> &other) { return !(*this == other); }
+
+  /* Returns this[x] */
   T &operator[](int x)
   {
     typename list<T>::iterator point = this->elements.begin();
-    advance(point, x);
+    advance(point,x);
     return *point;
   }
+
+  /* Compares cardinality */
   bool operator<(const Set<T> &other) const;
   bool operator>(const Set<T> &other) const;
-  Set<Set<T>> powerSet();
-  int Getcardinality() const { return this->elements.size(); };
+
+  /* Returns P(this) */
+  Set<Set<T>> power_set();
+
+  /* Returns |this| */
+  int get_cardinality() const { return this->elements.size(); };
+
+  /* Returns this ⋃ s */
   Set<T> unite(Set &s);
+
+  /* Returns this ⋂ s */
   Set<T> intersection(Set<T> &s);
+
+  /* Returns this/s */
   Set<T> operator-(Set<T> &s);
+
+  /*Returns this * s */
   Set<pair<T, T>> operator*(Set<T> &s);
+
+  /* Printing */
   template <class U>
   friend ostream &operator<<(std::ostream &strm, Set<U> s);
   template <class U>
@@ -79,6 +109,12 @@ private:
   list<T> elements;
 };
 
+
+/**
+ * @brief Removes a given element from set
+ * 
+ * @param given element 
+ */
 template <class T>
 void Set<T>::remove(T element)
 {
@@ -90,6 +126,11 @@ void Set<T>::remove(T element)
   }
 }
 
+/**
+ * @brief Adds a given element to a set
+ * 
+ * @param element The element being added
+ */
 template <class T>
 void Set<T>::add(T element)
 {
@@ -97,24 +138,36 @@ void Set<T>::add(T element)
   this->elements.sort();
 }
 
+/**
+ * @brief Returns if the set is a subset of s
+ * 
+ * @return true this ⊆ s
+ * @return false this ⊈ s
+ */
 template <class T>
-bool Set<T>::subsetOf(Set<T> &s)
+bool Set<T>::sub_set_of(Set<T> &s)
 {
-  if (!this->Getcardinality())
+  if (!this->get_cardinality())
     return true;
-  if (!s.Getcardinality() && this->Getcardinality())
+  if (!s.get_cardinality() && this->get_cardinality())
     return false;
   for (typename list<T>::iterator point = this->elements.begin();
        point != this->elements.end(); point++)
   {
-    if (!s.iselement(*point))
+    if (!s.is_element(*point))
       return false;
   }
   return true;
 }
 
+/**
+ * @brief Returns if a given elements is an element of the set
+ * 
+ * @return true element ∈ this
+ * @return false element ∉ this
+ */
 template <class T>
-bool Set<T>::iselement(T element)
+bool Set<T>::is_element(T element)
 {
   for (typename list<T>::iterator i = this->elements.begin();
        i != this->elements.end(); i++)
@@ -125,38 +178,45 @@ bool Set<T>::iselement(T element)
   return false;
 }
 
+/* If this = other */
 template <class T>
 bool Set<T>::operator==(Set<T> &s)
 {
-  if (!s.Getcardinality())
-    return !this->Getcardinality();
-  else if (!this->Getcardinality())
-    return !s.Getcardinality();
-  return this->subsetOf(s) && s.subsetOf(*this);
+  /* If both has cardinality of 0 */
+  if (!s.get_cardinality())
+    return !this->get_cardinality();
+  else if (!this->get_cardinality())
+    return false;
+  /* this ⊆ s ⋀ s ⊆ this */
+  return this->sub_set_of(s) && s.sub_set_of(*this);
 }
 
+/* Compares cardinality */
 template <class T>
 bool Set<T>::operator<(const Set<T> &other) const
 {
-  return this->Getcardinality() < other.Getcardinality();
+  return this->get_cardinality() < other.get_cardinality();
 }
 
 template <class T>
 bool Set<T>::operator>(const Set<T> &other) const
 {
-  return this->Getcardinality() > other.Getcardinality();
+  return this->get_cardinality() > other.get_cardinality();
 }
 
+/* Returns P(this) */
 template <class T>
-Set<Set<T>> Set<T>::powerSet()
+Set<Set<T>> Set<T>::power_set()
 {
   Set<Set<T>> ret;
+  /* Adds ∅ */
   ret.add(Set<T>());
   for (typename list<T>::iterator i = this->elements.begin();
        i != this->elements.end(); i++)
   {
+    /* Each iteration adds the current element to all previous sets in ret and adds the new sets to ret */
     Set<Set<T>> rs;
-    for (int j = 0; j < ret.Getcardinality(); j++)
+    for (int j = 0; j < ret.get_cardinality(); j++)
     {
       Set<T> x = ret[j];
       x.add(*i);
@@ -167,18 +227,20 @@ Set<Set<T>> Set<T>::powerSet()
   return ret;
 }
 
+  /* Returns this ⋃ s */
 template <class T>
 Set<T> Set<T>::unite(Set<T> &s)
 {
   Set<T> temp = *this;
-  for (int i = 0; i < s.Getcardinality(); i++)
+  for (int i = 0; i < s.get_cardinality(); i++)
   {
-    if (!temp.iselement(s[i]))
+    if (!temp.is_element(s[i]))
       temp.add(s[i]);
   }
   return temp;
 }
 
+/* Returns this ⋂ s */
 template <class T>
 Set<T> Set<T>::intersection(Set<T> &s)
 {
@@ -186,7 +248,7 @@ Set<T> Set<T>::intersection(Set<T> &s)
   for (typename list<T>::iterator i = this->elements.begin();
        i != this->elements.end(); i++)
   {
-    if (s.iselement(*i))
+    if (s.is_element(*i))
       inter.push_back(*i);
   }
   inter.sort();
@@ -194,6 +256,7 @@ Set<T> Set<T>::intersection(Set<T> &s)
   return temp;
 }
 
+/* Returns this/s */
 template <class T>
 Set<T> Set<T>::operator-(Set<T> &s)
 {
@@ -206,6 +269,7 @@ Set<T> Set<T>::operator-(Set<T> &s)
   return temp;
 }
 
+/*Returns this * s */
 template <class T>
 Set<pair<T, T>> Set<T>::operator*(Set<T> &s)
 {
@@ -213,7 +277,7 @@ Set<pair<T, T>> Set<T>::operator*(Set<T> &s)
   for (typename list<T>::iterator i = this->elements.begin();
        i != this->elements.end(); i++)
   {
-    for (int j = 0; j < s.Getcardinality(); j++)
+    for (int j = 0; j < s.get_cardinality(); j++)
     {
       el.push_back(pair<T, T>(*i, s[j]));
     }
@@ -222,15 +286,16 @@ Set<pair<T, T>> Set<T>::operator*(Set<T> &s)
   return temp;
 }
 
+/* Printing */
 template <class T>
 ostream &operator<<(std::ostream &strm, Set<T> s)
 {
   s.elements.sort();
   strm << "{";
-  for (int i = 0; i < s.Getcardinality(); i++)
+  for (int i = 0; i < s.get_cardinality(); i++)
   {
     strm << " " << s[i] << " ";
-    if (i != s.Getcardinality() - 1)
+    if (i != s.get_cardinality() - 1)
       strm << ",";
   }
   return strm << "}";
@@ -241,16 +306,17 @@ ostream &operator<<(std::ostream &strm, Set<pair<T, T>> s)
 {
   s.elements.sort();
   strm << "{";
-  for (int i = 0; i < s.Getcardinality(); i++)
+  for (int i = 0; i < s.get_cardinality(); i++)
   {
     strm << " "
          << "( " << s[i].first << " , " << s[i].second << " )"
          << " ";
-    if (i != s.Getcardinality() - 1)
+    if (i != s.get_cardinality() - 1)
       strm << ",";
   }
   return strm << "}";
 }
+
 
 template <class T>
 typename Set<T>::iterator begin(Set<T> &s)
