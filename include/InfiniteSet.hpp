@@ -1,10 +1,8 @@
 #ifndef MATH_INF_SET
 #define MATH_INF_SET
 
-#include <initializer_list>
 #include <iostream>
-#include <list>
-#include <utility>
+
 
 using namespace std;
 

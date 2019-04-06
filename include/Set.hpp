@@ -1,9 +1,7 @@
 #ifndef MATH_SET
 #define MATH_SET
 
-#include <initializer_list>
 #include <iostream>
-#include <list>
 #include <utility>
 #include <iterator>
 

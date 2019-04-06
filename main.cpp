@@ -1,16 +1,11 @@
-#include "include/BinaryOperation.hpp"
-#include "include/Function.hpp"
-#include "include/InfiniteSet.hpp"
-#include "include/Set.hpp"
-#include <initializer_list>
 #include <iostream>
-#include <list>
 #include <string>
-#include <utility>
+#include "math_s.h"
 
 using namespace std;
 using namespace math;
 
+/* Examples */
 int main()
 {
     cout << "\nSets\n"

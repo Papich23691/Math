@@ -1,10 +1,7 @@
 #ifndef MATH_FUNCT
 #define MATH_FUNCT
 
-#include <initializer_list>
 #include <iostream>
-#include <list>
-#include <utility>
 
 using namespace std;
 namespace math {
