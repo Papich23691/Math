@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "math_s.h"
+#include <math_s.h>
 
 using namespace std;
 using namespace math;
