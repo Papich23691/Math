@@ -17,5 +17,7 @@
 #include "BinaryOperation.hpp"
 #include "Function.hpp"
 #include "InfiniteSet.hpp"
+#include "L_A/Field.hpp"
+#include "L_A/Matrix.hpp"
 
 #endif
