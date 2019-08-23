@@ -327,6 +327,7 @@ typename Set<T>::iterator end(Set<T> &s)
 {
   return s.end();
 }
+
 } // namespace math
 
 #endif

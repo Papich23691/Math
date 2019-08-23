@@ -19,7 +19,7 @@ class BinaryOperation
     BinaryOperation(function<T(T, T)> func) : op(func) {}
     ~BinaryOperation() {}
     /* Returns the result of the operation */
-    T operation(T &x, T &y);
+    T operator()(T &x, T &y);
     /* If the operation is closed on set */
     bool closure(Set<T> &set);
 
@@ -45,7 +45,7 @@ class BinaryOperation
 
 /* Returns the result of the operation */
 template <class T>
-T BinaryOperation<T>::operation(T &x, T &y)
+T BinaryOperation<T>::operator()(T &x, T &y)
 {
     return this->op(x, y);
 }
@@ -61,7 +61,7 @@ bool BinaryOperation<T>::closure(Set<T> &set)
     {
         for (int j = 0; j < set.get_cardinality(); j++)
         {
-            if (!set.is_element(this->operation(set[i], set[j])))
+            if (!set.is_element((*this)(set[i], set[j])))
                 return false;
         }
     }
@@ -83,8 +83,8 @@ bool BinaryOperation<T>::associative(Set<T> &set)
         {
             for (int n = 0; n < set.get_cardinality(); n++)
             {
-                if (this->operation(this->operation(set[i], set[j]), set[n]) !=
-                    this->operation(set[i], this->operation(set[j], set[n])))
+                if ((*this)((*this)(set[i], set[j]), set[n]) !=
+                    (*this)(set[i], (*this)(set[j], set[n])))
                     return false;
             }
         }
@@ -103,7 +103,7 @@ bool BinaryOperation<T>::commutative(Set<T> &set)
     {
         for (int j = 0; j < set.get_cardinality(); j++)
         {
-            if (this->operation(set[i], set[j]) != this->operation(set[j], set[i]))
+            if ((*this)(set[i], set[j]) != (*this)(set[j], set[i]))
                 return false;
         }
     }
@@ -124,8 +124,8 @@ typename Set<T>::iterator BinaryOperation<T>::identity_element(Set<T> &set)
         for (typename Set<T>::iterator j = set.begin(); j != set.end(); j++)
         {
             
-            if ((this->operation(*i, *j) != *j) ||
-                this->operation(*i, *j) != this->operation(*j, *i))
+            if (((*this)(*i, *j) != *j) ||
+                (*this)(*i, *j) != (*this)(*j, *i))
             {
                 identity = false;
                 break;
@@ -151,7 +151,7 @@ typename Set<T>::iterator BinaryOperation<T>::left_inverse_element(Set<T> &set,
     T identity=*this->identity_element(set);
     for (typename Set<T>::iterator i = set.begin(); i != set.end(); i++)
     {
-        if (this->operation(*i, x) == identity)
+        if ((*this)(*i, x) == identity)
             return i;
     }
     return set.end();
@@ -168,7 +168,7 @@ typename Set<T>::iterator BinaryOperation<T>::right_inverse_element(Set<T> &set,
     for (typename Set<T>::iterator i = set.begin();
          i != set.end(); i++)
     {
-        if (this->operation(x, *i) == identity)
+        if ((*this)(x, *i) == identity)
             return i;
     }
     return set.end();
@@ -189,9 +189,9 @@ bool BinaryOperation<T>::left_distributive(Set<T> &set,
         {
             for (int n = 0; n < set.get_cardinality(); n++)
             {
-                if (this->operation(set[i], bin.operation(set[j], set[n])) !=
-                    bin.operation(this->operation(set[i], set[j]),
-                                  this->operation(set[i], set[n])))
+                if ((*this)(set[i], bin.operation(set[j], set[n])) !=
+                    bin.operation((*this)(set[i], set[j]),
+                                  (*this)(set[i], set[n])))
                     return false;
             }
         }
@@ -209,9 +209,9 @@ bool BinaryOperation<T>::right_distributive(Set<T> &set,
         {
             for (int n = 0; n < set.get_cardinality(); n++)
             {
-                if (this->operation(bin.operation(set[j], set[n]), set[i]) !=
-                    bin.operation(this->operation(set[j], set[i]),
-                                  this->operation(set[n], set[i])))
+                if ((*this)(bin.operation(set[j], set[n]), set[i]) !=
+                    bin.operation((*this)(set[j], set[i]),
+                                  (*this)(set[n], set[i])))
                     return false;
             }
         }
@@ -226,7 +226,7 @@ Set<T> BinaryOperation<T>::calc_set(Set<pair<T, T>> &set)
     Set<T> temp;
     for (int i = 0; i < set.get_cardinality(); i++)
     {
-        temp.add(this->operation(set[i].first, set[i].second));
+        temp.add((*this)(set[i].first, set[i].second));
     }
     return temp;
 }

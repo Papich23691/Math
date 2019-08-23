@@ -5,6 +5,8 @@
 #include <initializer_list>
 #include <list>
 #include <utility>
+#include <cmath>
+#include <vector>
 
 #endif
 
