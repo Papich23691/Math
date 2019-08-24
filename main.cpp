@@ -79,14 +79,19 @@ int main()
      cout << NUM << endl;
      cout << "\nMatrices\n"
           << endl;
-     Matrix<double> m(3, 2, real);
+     Matrix<double> m(3, 3, real);
      m[0][0]= 2;
      m[1][1] = 3;
      m[1][0] = 4;
+     m[2][1] = 5;
+     m[2][2] = 4;
 
      cout << "Matrix \n" << m ;
      Matrix<double> mat(3, 3, real);
      cout << "Transpose\n" << m.transpose() << endl;
+     cout << "Multiply identity matrix\n" << m * Matrix<double>::identity(3) << endl;
+     cout << "Determinant\n" << m.determinant() << endl;
+     
      Vector<double> v(3,real);
      Vector<double> u(3,real);
      v[0] = 1;
@@ -95,7 +100,8 @@ int main()
      u[0] = 5;
      u[1] = 6;
      u[2] = 7;
-     cout << v << "Norm  " << v.norm() << endl;
-     cout << v << " cross \n" << u << "=\n" << v.cross_product(u);
+     cout << endl << v << "Norm  " << v.norm() << endl;
+     cout << endl << v << " cross \n" << u << "=\n" << v.cross_product(u);
+     cout << endl << v << " cosine similarity \n" << u << "=\n" << v.cosine_similarity(u) << endl;
      return 0;
 }

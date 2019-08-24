@@ -25,6 +25,13 @@ public:
             mat_data[i].resize(columns);
     }
     ~Matrix(){}
+    static Matrix<T> identity(int dim)
+    {
+        Matrix<T> identity(dim,dim,real);
+        for (int i=0;i<dim;i++)
+            identity[i][i] = 1;
+        return identity;
+    }
     vector<T> &operator[](int x) { return mat_data[x]; }
     Matrix<T> operator+(const Matrix<T> mat2);
     Matrix<T> operator+(const T scalar);
@@ -117,8 +124,8 @@ Matrix<T> Matrix<T>::operator-(const T scalar)
 template <class T>
 Matrix<T> Matrix<T>::operator*(const Matrix<T> mat2)
 {
-    T sum = this->field.get_zero;
-    Matrix<T> mul(this->rows, this->columns, this->field);
+    T sum = this->field.get_zero();
+    Matrix<T> mul(this->rows, mat2.columns, this->field);
     if (mat2.rows == this->columns)
     {
         for (int i = 0; i < mat2.columns; i++)
@@ -130,7 +137,7 @@ Matrix<T> Matrix<T>::operator*(const Matrix<T> mat2)
                     sum = this->field.field_add(sum, this->field.field_mul(mat2.mat_data[j][i], this->mat_data[k][j]));
                 }
                 mul.mat_data[k][i] = sum;
-                sum = this->field.get_zero;
+                sum = this->field.get_zero();
             }
         }
     }
